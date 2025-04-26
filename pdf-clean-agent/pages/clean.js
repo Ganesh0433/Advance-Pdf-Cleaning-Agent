@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState } from "react";
 import axios from "axios";
 
-export default function Clean() {
+export default function CleanPDF() {
   const [pdfFile, setPdfFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -10,9 +13,16 @@ export default function Clean() {
   const [downloadUrl, setDownloadUrl] = useState("");
 
   const handleFileChange = (e) => {
-    setPdfFile(e.target.files[0]);
+    const file = e.target.files[0];
+    setPdfFile(file);
     setSuccess(false);
     setError(null);
+    if (file && file.type === "application/pdf") {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    } else {
+      setPreviewUrl("");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -38,19 +48,22 @@ export default function Clean() {
       formData.append("file", pdfFile);
       formData.append("prompt", prompt);
 
-      const response = await axios.post("https://advance-pdf-cleaning-agent.onrender.com/clean-pdf", formData, {
-        responseType: "blob",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "https://advance-pdf-cleaning-agent.onrender.com/clean-pdf",
+        formData,
+        {
+          responseType: "blob",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      // Create download URL for the cleaned PDF
       const url = window.URL.createObjectURL(new Blob([response.data]));
       setDownloadUrl(url);
       setSuccess(true);
     } catch (err) {
-      setError(err.response?.data?.error || "An error occurred while processing the PDF");
+      setError(err.response?.data?.error || "Error processing PDF");
       console.error("Error:", err);
     } finally {
       setIsLoading(false);
@@ -58,149 +71,175 @@ export default function Clean() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-6">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">PDF Cleaning Agent</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Upload a PDF and provide instructions for what to remove
-          </p>
-        </div>
+    <>
+      <style jsx>{`
+        :root {
+          --navy-600: #1e3a8a;
+          --navy-700: #1e2f6d;
+          --navy-900: #172554;
+          --teal-50: #e6fffa;
+          --teal-600: #0d9488;
+          --teal-700: #0b8276;
+        }
+        .bg-navy-600 { background-color: var(--navy-600); }
+        .bg-navy-700 { background-color: var(--navy-700); }
+        .text-navy-900 { color: var(--navy-900); }
+        .bg-teal-50 { background-color: var(--teal-50); }
+        .bg-teal-600 { background-color: var(--teal-600); }
+        .bg-teal-700 { background-color: var(--teal-700); }
+        .focus\\:ring-navy-500:focus { --tw-ring-color: var(--navy-600); }
+        .focus\\:ring-teal-500:focus { --tw-ring-color: var(--teal-600); }
+        .hover\\:bg-navy-700:hover { background-color: var(--navy-700); }
+        .hover\\:bg-teal-700:hover { background-color: var(--teal-700); }
+      `}</style>
+      <div className="min-h-screen bg-gray-100 flex flex-col p-6 font-sans">
+        <div className="flex-1 w-full max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-8">
+          <header className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-navy-900">PDF Cleaner</h1>
+            <p className="mt-2 text-sm text-gray-600">
+              Securely clean your PDF documents
+            </p>
+          </header>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              PDF File
-            </label>
-            <div className="mt-1 flex items-center">
-              <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Choose File
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileChange}
-                  className="sr-only"
-                />
-              </label>
-              <span className="ml-3 text-sm text-gray-700">
-                {pdfFile ? pdfFile.name : "No file chosen"}
-              </span>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="prompt" className="block text-sm font-medium text-gray-700 mb-1">
-              Cleaning Instructions
-            </label>
-            <textarea
-              id="prompt"
-              rows={4}
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md p-2"
-              placeholder="Example: Remove any personal information, redundant text, and example phrases while keeping the original structure."
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-            />
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border-l-4 border-red-400 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-red-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <section className="space-y-6">
+              <div>
+                <label
+                  htmlFor="pdf-upload"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Upload PDF
+                </label>
+                <div className="flex items-center">
+                  <label
+                    htmlFor="pdf-upload"
+                    className="cursor-pointer bg-navy-600 text-white py-2 px-4 rounded-md hover:bg-navy-700 focus:outline-none focus:ring-2 focus:ring-navy-500 focus:ring-offset-2 transition"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
+                    Select File
+                    <input
+                      id="pdf-upload"
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      aria-describedby="pdf-upload-help"
                     />
-                  </svg>
+                  </label>
+                  <span className="ml-3 text-sm text-gray-600 truncate max-w-xs">
+                    {pdfFile ? pdfFile.name : "No file selected"}
+                  </span>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-700">{error}</p>
-                </div>
+                <p id="pdf-upload-help" className="mt-1 text-xs text-gray-500">
+                  Only PDF files are supported
+                </p>
               </div>
-            </div>
-          )}
 
-          {success && (
-            <div className="bg-green-50 border-l-4 border-green-400 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-green-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
+              <div>
+                <label
+                  htmlFor="instructions"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Cleaning Instructions
+                </label>
+                <textarea
+                  id="instructions"
+                  rows={4}
+                  className="w-full border border-gray-200 rounded-md p-3 focus:ring-2 focus:ring-navy-500 focus:border-navy-500 transition"
+                  placeholder="E.g., Remove personal information, headers, or footers"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  aria-describedby="instructions-help"
+                />
+                <p id="instructions-help" className="mt-1 text-xs text-gray-500">
+                  Specify what to remove from the PDF
+                </p>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                  className={`flex-1 py-2.5 rounded-md text-white font-medium ${
+                    isLoading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-navy-600 hover:bg-navy-700"
+                  } flex items-center justify-center transition focus:outline-none focus:ring-2 focus:ring-navy-500 focus:ring-offset-2`}
+                  aria-busy={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <svg
+                        className="animate-spin h-5 w-5 mr-2 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Processing
+                    </>
+                  ) : (
+                    "Clean PDF"
+                  )}
+                </button>
+
+                {success && (
+                  <a
+                    href={downloadUrl}
+                    download="cleaned.pdf"
+                    className="flex-1 py-2.5 rounded-md bg-teal-600 text-white font-medium hover:bg-teal-700 text-center transition focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                    aria-label="Download cleaned PDF"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-green-700">
-                    PDF cleaned successfully! Click the button below to download.
+                    Download
+                  </a>
+                )}
+              </div>
+
+              {(error || success) && (
+                <div
+                  className={`p-3 rounded-md transition-opacity duration-300 ${
+                    error ? "bg-red-50 text-red-700" : "bg-teal-50 text-teal-700"
+                  }`}
+                  role="alert"
+                >
+                  <p className="text-sm">
+                    {error || "PDF cleaned successfully"}
                   </p>
                 </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                isLoading ? "opacity-75 cursor-not-allowed" : ""
-              }`}
-            >
-              {isLoading ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
-                </>
-              ) : (
-                "Clean PDF"
               )}
-            </button>
+            </section>
 
-            {success && (
-              <a
-                href={downloadUrl}
-                download="cleaned_document.pdf"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            {previewUrl && (
+              <section
+                className="bg-gray-50 rounded-lg p-6"
+                aria-label="PDF preview"
               >
-                Download Cleaned PDF
-              </a>
+                <h2 className="text-sm font-medium text-gray-700 mb-3">
+                  Document Preview
+                </h2>
+                <iframe
+                  src={previewUrl}
+                  className="w-full h-[650px] rounded-md border border-gray-200"
+                  title="PDF Preview"
+                  aria-describedby="pdf-preview"
+                />
+              </section>
             )}
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
