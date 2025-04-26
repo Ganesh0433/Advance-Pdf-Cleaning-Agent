@@ -38,7 +38,7 @@ export default function Clean() {
       formData.append("file", pdfFile);
       formData.append("prompt", prompt);
 
-      const response = await axios.post("http://localhost:5000/clean-pdf", formData, {
+      const response = await axios.post("https://advance-pdf-cleaning-agent.onrender.com/clean-pdf", formData, {
         responseType: "blob",
         headers: {
           "Content-Type": "multipart/form-data",
