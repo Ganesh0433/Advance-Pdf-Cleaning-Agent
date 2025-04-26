@@ -49,7 +49,7 @@ export default function CleanPDF() {
       formData.append("prompt", prompt);
 
       const response = await axios.post(
-        "http://127.0.0.1:5000/clean-pdf",
+        process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000/clean-pdf",
         formData,
         {
           responseType: "blob",
@@ -74,7 +74,12 @@ export default function CleanPDF() {
     <div className="min-h-screen bg-gray-100 flex flex-col p-6 font-sans">
       <div className="flex-1 w-full max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-8">
         <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#172554]">PDF Cleaner</h1>
+          <h1
+            className="text-3xl font-bold"
+            style={{ color: "#172554" }}
+          >
+            PDF Cleaner
+          </h1>
           <p className="mt-2 text-sm text-gray-600">
             Securely clean your PDF documents
           </p>
@@ -92,7 +97,11 @@ export default function CleanPDF() {
               <div className="flex items-center">
                 <label
                   htmlFor="pdf-upload"
-                  className="cursor-pointer bg-[#1e3a8a] text-white py-2 px-4 rounded-md hover:bg-[#1e2f6d] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-offset-2 transition"
+                  className="cursor-pointer text-white py-2 px-4 rounded-md transition"
+                  style={{
+                    backgroundColor: "#1e3a8a",
+                    ":hover": { backgroundColor: "#1e2f6d" },
+                  }}
                 >
                   Select File
                   <input
@@ -123,7 +132,11 @@ export default function CleanPDF() {
               <textarea
                 id="instructions"
                 rows={4}
-                className="w-full border border-gray-200 rounded-md p-3 focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition"
+                className="w-full border border-gray-200 rounded-md p-3 transition"
+                style={{
+                  outlineColor: "#1e3a8a",
+                  borderColor: "#1e3a8a",
+                }}
                 placeholder="E.g., Remove personal information, headers, or footers"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
@@ -138,11 +151,17 @@ export default function CleanPDF() {
               <button
                 onClick={handleSubmit}
                 disabled={isLoading}
-                className={`flex-1 py-2.5 rounded-md text-white font-medium ${
+                className={`flex-1 py-2.5 rounded-md text-white font-medium flex items-center justify-center transition ${
+                  isLoading ? "bg-gray-400 cursor-not-allowed" : ""
+                }`}
+                style={
                   isLoading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#1e3a8a] hover:bg-[#1e2f6d]"
-                } flex items-center justify-center transition focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-offset-2`}
+                    ? {}
+                    : {
+                        backgroundColor: "#1e3a8a",
+                        ":hover": { backgroundColor: "#1e2f6d" },
+                      }
+                }
                 aria-busy={isLoading}
               >
                 {isLoading ? (
@@ -178,7 +197,11 @@ export default function CleanPDF() {
                 <a
                   href={downloadUrl}
                   download="cleaned.pdf"
-                  className="flex-1 py-2.5 rounded-md bg-[#0d9488] text-white font-medium hover:bg-[#0b8276] text-center transition focus:outline-none focus:ring-2 focus:ring-[#0d9488] focus:ring-offset-2"
+                  className="flex-1 py-2.5 rounded-md text-white font-medium text-center transition"
+                  style={{
+                    backgroundColor: "#0d9488",
+                    ":hover": { backgroundColor: "#0b8276" },
+                  }}
                   aria-label="Download cleaned PDF"
                 >
                   Download
@@ -188,11 +211,11 @@ export default function CleanPDF() {
 
             {(error || success) && (
               <div
-                className={`p-3 rounded-md transition-opacity duration-300 ${
-                  error
-                    ? "bg-red-50 text-red-700"
-                    : "bg-[#e6fffa] text-[#0d9488]"
-                }`}
+                className="p-3 rounded-md transition-opacity duration-300"
+                style={{
+                  backgroundColor: error ? "#FEF2F2" : "#e6fffa",
+                  color: error ? "#B91C1C" : "#0d9488",
+                }}
                 role="alert"
               >
                 <p className="text-sm">
