@@ -1,0 +1,7 @@
+Flask
+pdfplumber
+google-generativeai
+reportlab
+xhtml2pdf
+flask-cors
+gunicorn
