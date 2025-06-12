@@ -49,7 +49,7 @@ export default function CleanPDF() {
       formData.append("prompt", prompt);
 
       const response = await axios.post(
-        process.env.NEXT_PUBLIC_API_URL || "https://advance-pdf-cleaning-agent.onrender.com/clean-pdf",
+        process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000/clean-pdf",
         formData,
         {
           responseType: "blob",
