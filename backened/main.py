@@ -1,4 +1,6 @@
 from flask import Flask
+import firebase_admin 
+from firebase_admin import credentials, firestore
 import threading
 import time
 from datetime import datetime, timedelta
