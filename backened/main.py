@@ -530,9 +530,7 @@ def my_function():
   total_profit = sum(row[7] for row in trade_data)
   trade_data.append(["", "TOTAL", "", "", "", "", "", round(total_profit, 3),"",""])
   df = pd.DataFrame(trade_data, columns=["Serial No", "Date", "Entry Time", "Exit Time", "Position Type", "Entry Price", "Exit Price", "Profit",'profit/loss(100000)',"Amount(100000) After Charges"])
-  csv_filename = "Hdfc_backtest_results.csv"
-  df.to_csv(csv_filename, index=False)
-  files.download(csv_filename)
+
 
 
 def wait_for_next_15min_mark():
