@@ -213,7 +213,7 @@ def my_function():
 
           response = requests.get(url, params=params)
           print(response.json())
-running = True
+
 def wait_for_next_15min_mark():
     global running
     print("inside 15m function")
