@@ -1,6 +1,4 @@
 from flask import Flask
-import firebase_admin 
-from firebase_admin import credentials, firestore
 import threading
 import time
 from datetime import datetime, timedelta
@@ -11,42 +9,13 @@ import pytz
 import time
 import requests
 from datetime import datetime, timedelta
-
-
-
-
 ist = pytz.timezone('Asia/Kolkata')
-
 tv = TvDatafeed("mekalaganeshreddy796", "Ganesh?!1")
-
 app = Flask(__name__)
-
 running = False
 thread = None
-
-cred = credentials.Certificate(
-{
-  "type": "service_account",
-  "project_id": "fir-trading-72b86",
-  "private_key_id": "655252b974e4a7915c7464a6b800b1e5c7c4176e",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCoToeIINHjc5af\nN+P0+dDwit1YFAM90zCkZ4BhsD2jauT92W5ODuQjwoyZlLZoKxNmTF9DdI1jh8Om\nplQUFohIM9y6CVgGgpbdIrdHP2I1BWqKcCwU7vCzbXTMVITPI+uiF7vlEZCxsvoz\nJj96a7ZUIeGz73/lZpt+ApVpRN/hrpZTjzS1mZ/l2PpQKgIR+K8/nK4OzTufgFSS\nWF4DzS2k3oR9J+dBb6lbXarF1OhYMXGLKIUEhdtTX907m2imbFjS1uZ0vUj8pu7g\ndy63/pSRgoTDnpzqoGJGr8+LP6TzBSWBF9eB0SR4j6QiG8b64ekNf+U5lJWyFCuu\nvdnihrGTAgMBAAECggEAFPV2hjquuHgqmm2KKyBi5wQml93My4moRd4yYWKM7R6W\nITskM9SXOhFzkyUu6TOYCQYGBO9CM3ydc3wZ/fMSXzS/eMFKH2wVX7iqLIAATvb7\niKglrSkA0MSW0LfOXsHWiYsSwG4FX+5C9FSqf1MOKQBGdt2icSLrxm+JmKAq5b5g\nC3hrNf402Hj96LspIzwQ+T1bVru4kQxwZKVt4KCxS5a8HJ/5MBY4Jyqe8wHNyhb0\nspyqdJYVm3XTqN+z+AOEBL/r+fAxmqiSRu089frwyXx0inyvJu+Sgt9ECUdHPFO2\nrm6gBgtvs4gJQy6hTc7SAJGBvjk3aF8LSu5OQYwu2QKBgQDdkAF9FiV6VsABrUFa\n0V5Bv0HA/IoBoNx/0AJdSdH3rsM1ogqX46PnnL3Zzzuhq+9+52InkIbER+Pm3Q/A\nOTRHyF2vE5zl1NflCKPPEglYAD5spMJbZ6x+buqBU7E0kFL1sVDRddpSgZxvztjU\n2rxcOw8CvSa3v0Wp+f7gJyis2QKBgQDCd3izQUi9BkZwDtwcN3lVR+c49VQz8/7c\n8DOeEnfpZhWhHNPyLNqs3hab1QxBwbSm3OJ8AhZZPZNsA6Enu3uZ2tfMtMulKe0B\n5tsRS2FqqkTqBui1u08QHYpQxwDOeIJG6jS0FPZ6VXBZORE7q4GARegRf+La9I3o\n0aIFrAu+SwKBgBsew2/iRBgjgkEySeup8RWvKYdL4kCsxhDHD2MH5DGjLLXl7dIF\nxUxWfU6p9Sym9RvdisA5CqX//r+Fk6X92o5m0kDZ77yaPwsD8bkpBgfFj96QlFHH\n8O9Q+Fd4PRqoB9+XIsNg36Z1wwZUlWoIlEHd4Mp/CLw5J3fU6APcBziRAoGAWX5B\nvby9jL/miotMIHAnFmgQsNW1+nK/R04Dcytso6ynJ43su/aIbCWIog5ZpalPSbs9\nP3R2dHsx7PN+pppRN2zPAxXw4gF5YPasujjGjB/vtwOW9ItOx0vQ63upk1tCGQCP\nYJCFHadUHLt2gs9auX1yXxtLexgwdoSC27lhbiECgYEAn1prdcu8oMgKUVBF3HHA\ncx0ZyuYlwvl19X66oKLKw0qydbAVhYcAWxPD89xwuLReqzj5t99Ta71S6B1uIVh7\n9u2tE3L4Cc5HLdpO69e/7bxK9ENrp8pW5RSPjv7AVuA7V1OHmBRk06xoNKC1zhU7\nBR/ZnVG+b6cKy6aHFAa0Iug=\n-----END PRIVATE KEY-----\n",
-  "client_email": "firebase-adminsdk-fbsvc@fir-trading-72b86.iam.gserviceaccount.com",
-  "client_id": "109754861267806926213",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40fir-trading-72b86.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
-)
-
-
-firebase_admin.initialize_app(cred)
-db = firestore.client()
-
-
 def my_function():
-  length=100
+  length=500
   countlimit=length
   taken=0
   triggered = 0
@@ -56,42 +25,26 @@ def my_function():
   current_profit = 0
   countCandles=0
   flag=True
-  eachamount=100000
+  eachamount=7000
+  sumofselltobuy=[]
   l=[]
+  g=0
   d=-1
-
+  reversefalse=False
   hdfc = tv.get_hist(symbol='HDFCBANK', exchange='NSE', interval=Interval.in_15_minute, n_bars=length)
-  icici = tv.get_hist(symbol='ICICIBANK', exchange='NSE', interval=Interval.in_15_minute, n_bars=length)
-  sbi = tv.get_hist(symbol='SBIN', exchange='NSE', interval=Interval.in_15_minute, n_bars=length)
-  axis = tv.get_hist(symbol='AXISBANK', exchange='NSE', interval=Interval.in_15_minute, n_bars=length)
   banknifty = tv.get_hist(symbol='BANKNIFTY', exchange='NSE', interval=Interval.in_15_minute, n_bars=length)
-  kotak = tv.get_hist(symbol='KOTAKBANK', exchange='NSE', interval=Interval.in_15_minute, n_bars=length)
-  bob = tv.get_hist(symbol='BANKBARODA', exchange='NSE', interval=Interval.in_15_minute, n_bars=length)
   banknifty = banknifty.tz_localize('UTC').tz_convert('Asia/Kolkata')
-
-  banknifty_datetime = banknifty.index[:d].tolist()
-  hdfc_close_list = hdfc['close'][:d].tolist()
-  hdfc_open_list = hdfc['open'][:d].tolist()
-  hdfc_high_list = hdfc['high'][:d].tolist()
-  hdfc_low_list = hdfc['low'][:d].tolist()
-  icici_close_list = icici['close'][:d].tolist()
-  sbi_close_list = sbi['close'][:d].tolist()
-  kotak_close_list = kotak['close'][:d].tolist()
-  bob_close_list = bob['close'][:d].tolist()
-  axis_close_list = axis['close'][:d].tolist()
-  banknifty_close_list = banknifty['close'][:d].tolist()
-  banknifty_open_list = banknifty['open'][:d].tolist()
-  banknifty_high_list = banknifty['high'][:d].tolist()
-  banknifty_low_list = banknifty['low'][:d].tolist()
-  banknifty_volume_list = banknifty['volume'][:d].tolist()
-
-
-  testdf=pd.DataFrame({
-      'hdfc':hdfc_close_list,
-      'banknifty':banknifty_datetime,
-
-  })
-  print(testdf)
+  banknifty_datetime = banknifty.index[g:d].tolist()
+  hdfc_close_list = hdfc['close'][g:d].tolist()
+  hdfc_open_list = hdfc['open'][g:d].tolist()
+  hdfc_volume_list = hdfc['volume'][g:d].tolist()
+  hdfc_high_list = hdfc['high'][g:d].tolist()
+  hdfc_low_list = hdfc['low'][g:d].tolist()
+  banknifty_close_list = banknifty['close'][g:d].tolist()
+  banknifty_open_list = banknifty['open'][g:d].tolist()
+  banknifty_high_list = banknifty['high'][g:d].tolist()
+  banknifty_low_list = banknifty['low'][g:d].tolist()
+  banknifty_volume_list = banknifty['volume'][g:d].tolist()
   entry_price = None
   position_type = None
   loss_threshold = 20
@@ -101,99 +54,28 @@ def my_function():
   max_loss_points = 150
   k=None
   store=None
-
   take_profit_pct = 0.01
   entrydate=None
   entrytime=None
   trade_data = []
   demo_trade=[]
   j=0
-  def Position_send_to_firebase(prediction_data):
-    try:
-        doc_ref = db.collection('trade_predictions').document()
-        doc_ref.set({
-            'symbol': prediction_data['symbol'],
-            'Date': prediction_data['Date'],
-            'Time': prediction_data['Time'],
-            'timestamp': firestore.SERVER_TIMESTAMP,
-            'Position_Type': prediction_data['Position_Type'],
-            'Entry_Price': prediction_data['Entry_Price']
-        })
-        print("✅ Prediction sent to Firebase")
-    except Exception as e:
-        print(f"❌ Error sending to Firebase: {e}")
-  def Exit_send_to_firebase(prediction_data):
-      try:
-          doc_ref = db.collection('trade_predictions').document()
-          doc_ref.set({
-              'symbol': prediction_data['symbol'],
-              'Date': prediction_data['Date'],
-              'Time': prediction_data['Time'],
-              'timestamp': firestore.SERVER_TIMESTAMP,
-              'Position_Type': prediction_data['Position_Type'],
-              'Exit_Price': prediction_data['Exit_Price']
-          })
-          print("✅ Prediction sent to Firebase")
-      except Exception as e:
-          print(f"❌ Error sending to Firebase: {e}")
-  def log_trade(serial_no, date, entry_time, exit_time, position_type, entry_price, exit_price, profit_loss, eachamount):
-          nonlocal j  # Use enclosing j from my_function
-          profit = exit_price - entry_price if position_type == "BUY" else entry_price - exit_price
-          trade_data.append([
-              serial_no + j,
-              date,
-              entry_time,
-              exit_time,
-              position_type,
-              entry_price,
-              exit_price,
-              round(profit, 3),
-              round(profit_loss, 2),
-              round(eachamount, 1)
-          ])
-          j += 1
 
-  df = pd.DataFrame({
-      'open': banknifty_open_list,
-      'close': banknifty_close_list,
-      'volume': banknifty_volume_list
-  })
-  hdf = pd.DataFrame({
-      'open': hdfc_open_list,
-      'close': hdfc_close_list,
-
-  })
-
-  df['priceDifference'] = df['open'] - df['close']
-  hdf['priceDifference'] = hdf['open'] - hdf['close']
-
-  df['volumePriceProduct'] = ((df['volume'] * df['priceDifference']) / 50)-100000
-
-
-  ma_period = 14
-
-
-  df['volMA'] = df['volumePriceProduct'].rolling(window=ma_period).mean()
-
-  df['volMA_above_zero'] = df['volMA'] + df['volume']
   for i in range(15,len(hdfc_close_list)):
       current_time = banknifty_datetime[i]
-      current_time = banknifty_datetime[i]
       current_date_str = current_time.strftime("%Y-%m-%d")
+
       day_of_week = datetime.strptime(current_date_str, "%Y-%m-%d").strftime("%A")
 
       current_time_str = current_time.strftime("%H:%M")
 
       hour = current_time_str.split(":")[0]
-
-
-      countCandles=countCandles+1
-
-      if countCandles > countlimit:
-
+      if  current_time_str == "09:15":
+        flag=False
+      if current_time_str == "15:00":
           if position_type:
               exit_price = hdfc_close_list[i]
-              if position_type == 'BUY':
+              if position_type == 'buy':
                   trade_profit = exit_price - entry_price
               else:
                   trade_profit = entry_price - exit_price
@@ -202,162 +84,30 @@ def my_function():
               else:
                   total_loss += abs(trade_profit)
               net_profit = total_profit - total_loss
-              s=((trade_profit)*5*100/2000)
+              s=((trade_profit)*100*5/hdfc_close_list[i])
               l.append(s)
-              eachamount +=( eachamount * (s / 100))-250
+             
               demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Exit_Price':exit_price})
-              log_trade(1, entrydate, entrytime, current_time_str, position_type, entry_price, exit_price,( eachamount* ((trade_profit)*5/2000)),eachamount)
-              print(f"countlimit exceed  exit {position_type} at {exit_price} {current_time} with profit {trade_profit}  and total profit {net_profit} and each eamount is {eachamount}")
+      
               triggered += 1
-              position_type = None
-              entry_price = None
-
-
-              reversal_count = 0
-              current_profit = 0
-          countlimit=length
-          continue
-
-
-
-      if current_time_str == "15:15":
-
-          if position_type:
-              exit_price = hdfc_close_list[i]
-              if position_type == 'BUY':
-                  trade_profit = exit_price - entry_price
-              else:
-                  trade_profit = entry_price - exit_price
-              if trade_profit >= 0:
-                  total_profit += trade_profit
-              else:
-                  total_loss += abs(trade_profit)
-              net_profit = total_profit - total_loss
-              s=((trade_profit)*100*5/2000)
-              l.append(s)
-              eachamount += ( eachamount * (s / 100))-250
-              demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Exit_Price':exit_price})
-              log_trade(1, entrydate, entrytime, current_time_str, position_type, entry_price, exit_price,( eachamount* ((trade_profit)*5/2000)),eachamount)
-              print(f"3:15 PM exit {position_type} at {exit_price} {current_time} with profit {trade_profit}  and total profit {net_profit} and each eamount is {eachamount}")
-              triggered += 1
+              flag=False
               position_type = None
               entry_price = None
               reversal_count = 0
               current_profit = 0
           continue
-
-      if position_type and not(-280 < df['priceDifference'][i] < 280):
-              exit_price = hdfc_close_list[i]
-
-
-              if position_type == 'BUY':
-                  trade_profit = exit_price - entry_price
-              else:
-                  trade_profit = entry_price - exit_price
-              if trade_profit >= 0:
-                  total_profit += trade_profit
-              else:
-                  total_loss += abs(trade_profit)
-              net_profit = total_profit - total_loss
-              s=((trade_profit)*100*5/2000)
-              l.append(s)
-              eachamount +=( eachamount * (s / 100))-250
-              demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Exit_Price':exit_price})
-              log_trade(1, entrydate, entrytime, current_time_str, position_type, entry_price, exit_price,( eachamount* ((trade_profit)*5/2000)),eachamount)
-              print(f"maxcandle exit {position_type} at {exit_price} {current_time} with profit {trade_profit}  and total profit {net_profit} and each eamount is {eachamount}")
-              triggered += 1
-              position_type = None
-              entry_price = None
-              reversal_count = 0
-              current_profit = 0
-              continue
-
-
-
-
-      if position_type == 'SELL' and (df['volMA_above_zero'][i]-df['volume'][i]<-420000) :
-          print(hdf['priceDifference'][i])
-          countlimit=24
-          exit_price =hdfc_close_list[i]
-          if position_type == 'BUY':
-              trade_profit = exit_price - entry_price
-          else:
-              trade_profit = entry_price - exit_price
-
-          if trade_profit >= 0:
-              total_profit += trade_profit
-              taken+=1
-              s=((trade_profit)*5/2000)*100
-              l.append(s)
-              eachamount += ( eachamount * (s / 100))-250
-              demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Exit_Price':exit_price})
-              log_trade(1, entrydate, entrytime, current_time_str, position_type, entry_price, exit_price,( eachamount* ((trade_profit)*5/2000)),eachamount)
-              print(f"Reversed sell to buy at {exit_price} {current_time} with profit {trade_profit}  and total profit {net_profit} and each eamount is {eachamount}")
-              entrydate=current_date_str
-              entrytime=current_time_str
-          else:
-              total_loss += abs(trade_profit)
-              s=((trade_profit)*100*5/2000)
-              l.append(s)
-              taken+=1
-              eachamount +=( eachamount * (s / 100))-250
-              log_trade(1, entrydate, entrytime, current_time_str, position_type, entry_price, exit_price,( eachamount* ((trade_profit)*5/2000)) ,eachamount)
-              demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Exit_Price':exit_price})
-              print(f"Reversed sell to buy at {exit_price} {current_time} with loss {trade_profit }  and total profit {net_profit} and each eamount is {eachamount}")
-              entrydate=current_date_str
-              entrytime=current_time_str
-          net_profit = total_profit - total_loss
-
-
-
-          position_type = 'BUY'
-          entry_price = exit_price
-          demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Entry_Price':entry_price})
-
-          continue
-
-
-
-
-
-
-
-      if triggered > 0:
-          triggered = 0
-          continue
-
-
       all_buy = (
-
-
-          hdfc_close_list[i] > hdfc_close_list[i - 1] and
-          icici_close_list[i] > icici_close_list[i - 1] and
-          sbi_close_list[i] > sbi_close_list[i - 1]
-
+          hdfc_close_list[i] > hdfc_open_list[i]
       )
-
-
       all_sell = (
-
-
-        hdfc_close_list[i] < hdfc_close_list[i - 1] and
-          icici_close_list[i] < icici_close_list[i - 1] and
-          sbi_close_list[i] < sbi_close_list[i - 1]
-
+        hdfc_close_list[i] < hdfc_open_list[i]
       )
+      if (hdfc_volume_list[i])>750000 and hdfc_volume_list[i]<1700000:
+        flag=True
 
-      # x=hdfc_close_list[i-2]>hdfc_close_list[i-1] and abs(hdf['priceDifference'][i-1])>2.5*(abs(hdf['priceDifference'][i]))
-      # y=hdfc_close_list[i-2]<hdfc_close_list[i-1] and abs(hdf['priceDifference'][i-1])>2.5*(abs(hdf['priceDifference'][i]))
-      x=0
-      y=0
+      if all_buy and flag and position_type != 'buy':
 
-
-
-
-      if all_buy and flag:
-
-
-        if position_type == 'SELL'  :
+        if position_type == 'sell'  :
             exit_price = hdfc_close_list[i]
             trade_profit = entry_price - exit_price
             if trade_profit >= 0:
@@ -365,128 +115,80 @@ def my_function():
             else:
                 total_loss += abs(trade_profit)
             net_profit = total_profit - total_loss
-            s=((trade_profit)*100/2000)
+            s=((trade_profit)*100/hdfc_close_list[i])
             l.append(s)
-            eachamount +=( eachamount *5* (s / 100))-250
-            log_trade(1, entrydate, entrytime, current_time_str, position_type, entry_price, exit_price,( eachamount* ((trade_profit)*5/2000)),eachamount)
-            print(f"Exited sell at {exit_price} {current_time} with profit {trade_profit}  and total profit {net_profit} and each eamount is {eachamount}")
+
+            demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Exit_Price':exit_price})
+  
             position_type = None
             entry_price = None
             triggered += 1
-        if  current_time_str != "15:00" and current_time_str != "13:30" and day_of_week!="Saturday" and current_time_str != "10:30" and current_time_str != "11:00" and position_type != 'buy'  and (df['volMA_above_zero'][i]-df['volume'][i]<1000000 or df['volMA_above_zero'][i]-df['volume'][i]>11000000) and -300 < df['priceDifference'][i] < 300 and not (-100 < df['priceDifference'][i] < 100) and not x :
+        if  current_time_str != "15:00"  and current_time_str != "15:15" :
             countlimit=14
             countCandles=0
             taken+=1
             entrydate=current_date_str
             entrytime=current_time_str
-            print("difference price is ",df['volMA_above_zero'][i]-df['volume'][i])
-            print(f"All confirm buy at {hdfc_close_list[i]} {current_time}")
-            position_type = 'BUY'
+            flag=False
+
+            position_type = 'buy'
+            reversefalse=False
             entry_price = hdfc_close_list[i]
-            demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Entry_Price':entry_price})
             reversal_count = 0
             current_profit = 0
-
-
-
-      if all_sell and flag:
-          # if position_type == 'buy':
-          #     exit_price = hdfc_close_list[i]
-          #     trade_profit = exit_price - entry_price
-          #     if trade_profit >= 0:
-          #         total_profit += trade_profit
-          #     else:
-          #         total_loss += abs(trade_profit)
-          #     net_profit = total_profit - total_loss
-          #     s=(int(trade_profit)*5*100/1800)
-          #     l.append(s)
-          #     eachamount += eachamount * (s / 100)
-          #     print(f"Exited buy at {exit_price} {current_time} with profit {trade_profit} and total profit {net_profit} and each eamount is {eachamount}")
-          #     position_type = None
-          #     entry_price = None
-          #     triggered += 1
-          if  current_time_str != "15:00" and current_time_str != "13:30"  and day_of_week!="Saturday"  and position_type != 'sell' and (df['volMA_above_zero'][i]-df['volume'][i]<1000000  or df['volMA_above_zero'][i]-df['volume'][i]>11000000 ) and -300 < df['priceDifference'][i] < 300 and not (-50 < df['priceDifference'][i] < 50) and not y :
+      if all_sell and flag  and position_type != 'sell':
+          if position_type == 'buy':
+              exit_price = hdfc_close_list[i]
+              trade_profit = exit_price - entry_price
+              if trade_profit >= 0:
+                  total_profit += trade_profit
+              else:
+                  total_loss += abs(trade_profit)
+              net_profit = total_profit - total_loss
+              s=(int(trade_profit)*5*100/1800)
+              l.append(s)
+              eachamount += eachamount * (s / 100)
+              demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Exit_Price':exit_price})
+     
+              position_type = None
+              entry_price = None
+              triggered += 1
+          if  current_time_str != "15:00"    and current_time_str != "15:15"  :
               countlimit=13
               countCandles=0
-              print(current_time_str)
               taken+=1
               k= banknifty_open_list[i]
-              print(f"All confirm sell at {hdfc_close_list[i]} {current_time}")
+              demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Entry_Price':entry_price})
+      
               entrydate=current_date_str
               entrytime=current_time_str
-              store=df['volMA_above_zero'][i]-df['volume'][i]
+              reversefalse=False
+              flag=False
               entry=banknifty_close_list[0]
-              position_type = 'SELL'
+              position_type = 'sell'
               entry_price = hdfc_close_list[i]
-              demo_trade.append({  'symbol': 'HDFC','Date': entrydate,'Position_Type': position_type,'Time':current_time_str,'Entry_Price':entry_price})
               reversal_count = 0
               current_profit = 0
 
+  last_trade = {'symbol': 'HDFC', 'Date': '2025-08-23', 'Position_Type': 'sell', 'Time': '23:57', 'Exit_Price': 1965.0}
+  print(demo_trade[-1])
+  last_trade_time_str = last_trade.get('Time') 
+  last_trade_Date_str = last_trade.get('Date') 
 
-      if (position_type == 'SELL' or position_type == 'BUY') and (reversal_count < max_reversals or countCandles < 13):
-          flag=False
-      else:
-          flag=True
-  amount=100000
-
-  for percentage in l:
-      amount += -250+( amount * (percentage / 100))
-
-
-  profits = [row[7] for row in trade_data]
-  # Parameters
-  initial_capital = 100000
-  leverage = 5
-  trade_cost = 250
-  stock_price = 2000 # Stock price
-    # Absolute movement in stock price for each trade
-
-  # Function to calculate compounded capital after each trade
-  def calculate_compounded_profit(initial_capital, leverage, trade_cost, profits, stock_price):
-      capital = initial_capital
-      for profit_loss in profits:
-          position_size = capital * leverage  # how much you can buy with leverage
-          # Profit/Loss in Rupees
-          profit_in_rupees = (profit_loss / stock_price) * position_size
-
-          # Update capital
-          capital += profit_in_rupees
-
-          # Subtract trading cost
-          # capital -= trade_cost
-
-      return capital
-
-  # Calculate final capital
-  final_capital = calculate_compounded_profit(initial_capital, leverage, trade_cost, profits, stock_price)
-  print(final_capital)
-
-    # Example usage
-
-
-  last_trade = demo_trade[-1]
-  print(demo_trade)
-  last_trade_time_str = last_trade.get('Time')  # e.g., "15:30"
-
-  # Parse the time from the string (assuming it's in "HH:MM" 24-hour format)
-  last_trade_time = datetime.strptime(last_trade_time_str, "%H:%M").time()
-
-  # Get the current time
-# Set the IST timezone
+  # Combine date and time from last trade
+  last_trade_datetime = datetime.strptime(f"{last_trade_Date_str} {last_trade_time_str}", "%Y-%m-%d %H:%M")
   india_timezone = pytz.timezone('Asia/Kolkata')
+  last_trade_datetime = india_timezone.localize(last_trade_datetime)
 
-  # Get current time in IST
-  current_time = datetime.now(india_timezone).time()
-  print(current_time)
+  # Current time
+  now = datetime.now(india_timezone)
 
-  # Convert both times to datetime objects (today's date)
-  now = datetime.now(india_timezone).replace(second=0, microsecond=0)
-  print(now)
-  trade_time_today = now.replace(hour=last_trade_time.hour, minute=last_trade_time.minute)
-  print(trade_time_today)
+  # Difference in seconds
+  diff_seconds = (now - last_trade_datetime).total_seconds()
+  print("Difference in seconds:", diff_seconds)
 
     # Check if the difference is less than 2 minutes
-  if abs((now - trade_time_today).total_seconds()) < 902:
+  if  diff_seconds < 300:
         lasttrade_list = last_trade.keys()
         if 'Entry_Price' in lasttrade_list:
 
@@ -511,31 +213,12 @@ def my_function():
 
           response = requests.get(url, params=params)
           print(response.json())
-
-          Exit_send_to_firebase(last_trade)
-
-  # print("demo-trade",demo_trade)
-  print("Total profit: ", total_profit)
-  print("Total loss: ", total_loss)
-  print("Net profit: ", net_profit)
-  print("Triggered: ", taken)
-  print("amount : ",amount)
-  betweenfrom= banknifty_datetime[0]
-  between_strfrom = betweenfrom.strftime("%Y-%m-%d")
-  betweento= banknifty_datetime[len(hdfc_close_list)-2]
-  between_strto = betweento.strftime("%Y-%m-%d")
-  print(between_strfrom, ' to ', between_strto)
-  current_time = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
-  print("Current Time:", current_time)
-  total_profit = sum(row[7] for row in trade_data)
-  trade_data.append(["", "TOTAL", "", "", "", "", "", round(total_profit, 3),"",""])
-  df = pd.DataFrame(trade_data, columns=["Serial No", "Date", "Entry Time", "Exit Time", "Position Type", "Entry Price", "Exit Price", "Profit",'profit/loss(100000)',"Amount(100000) After Charges"])
-
-
-
+running = True
 def wait_for_next_15min_mark():
     global running
+    print("inside 15m function")
     while running:
+        print("inside while ")
         now = datetime.now()
         minutes_to_add = (15 - (now.minute % 15)) % 15
         if minutes_to_add == 0:
@@ -544,13 +227,17 @@ def wait_for_next_15min_mark():
         next_mark = now.replace(second=0, microsecond=0) + timedelta(minutes=minutes_to_add)
         next_mark += timedelta(seconds=3)  # 3s buffer
 
-        sleep_time = (next_mark - datetime.now()).total_seconds()
+        # sleep_time = (next_mark - datetime.now()).total_seconds()
+        sleep_time = 1
         if sleep_time > 0:
             print(f"⏳ Waiting {int(sleep_time)}s until {next_mark.strftime('%H:%M:%S')}")
             time.sleep(sleep_time)
 
         if running:  # check again before running
+            
             my_function()
+            break
+
 
 @app.route("/")
 def home():
