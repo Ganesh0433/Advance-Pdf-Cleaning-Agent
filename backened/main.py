@@ -102,7 +102,7 @@ def my_function():
       all_sell = (
         hdfc_close_list[i] < hdfc_open_list[i]
       )
-      if (hdfc_volume_list[i])>750000 and hdfc_volume_list[i]<1700000:
+      if (hdfc_volume_list[i])>650000 and hdfc_volume_list[i]<1700000:
         flag=True
 
       if all_buy and flag and position_type != 'buy':
@@ -170,7 +170,7 @@ def my_function():
               reversal_count = 0
               current_profit = 0
 
-  last_trade = {'symbol': 'HDFC', 'Date': '2025-08-23', 'Position_Type': 'sell', 'Time': '23:57', 'Exit_Price': 1965.0}
+  last_trade = demo_trade[-1]
   print(demo_trade[-1])
   last_trade_time_str = last_trade.get('Time') 
   last_trade_Date_str = last_trade.get('Date') 
@@ -189,7 +189,7 @@ def my_function():
   print("Difference in seconds:", diff_seconds)
 
     # Check if the difference is less than 2 minutes
-  if  diff_seconds < 300:
+  if  diff_seconds < 200:
         lasttrade_list = last_trade.keys()
         if 'Entry_Price' in lasttrade_list:
 
@@ -215,50 +215,47 @@ def my_function():
           response = requests.get(url, params=params)
           print(response.json())
 
+
+def is_trading_time():
+    now = datetime.now()
+    # Monday=0 … Sunday=6
+    if now.weekday() >= 5:  # Sat or Sun
+        return False
+    return 9 <= now.hour < 16  # 9:00–15:59
+
 def wait_for_next_15min_mark():
-    global running
-    print("inside 15m function")
-    while running:
-        print("inside while ")
+    print("📌 Trading thread started")
+    while True:
+        if not is_trading_time():
+            print("⏸ Outside trading hours, sleeping 60s...")
+            time.sleep(60)
+            continue
+
         now = datetime.now()
         minutes_to_add = (15 - (now.minute % 15)) % 15
         if minutes_to_add == 0:
             minutes_to_add = 15
 
         next_mark = now.replace(second=0, microsecond=0) + timedelta(minutes=minutes_to_add)
-        next_mark += timedelta(seconds=3)  # 3s buffer
+        next_mark += timedelta(seconds=3)  # small buffer
 
-        # sleep_time = (next_mark - datetime.now()).total_seconds()
-        sleep_time = 1
+        sleep_time = (next_mark - datetime.now()).total_seconds()
         if sleep_time > 0:
-            print(f"⏳ Waiting {int(sleep_time)}s until {next_mark.strftime('%H:%M:%S')}")
+            print(f"⏳ Sleeping {int(sleep_time)}s until {next_mark.strftime('%H:%M:%S')}")
             time.sleep(sleep_time)
 
-        if running:  # check again before running
-            
+        if is_trading_time():
+            print(f"🚀 Running my_function() at {datetime.now().strftime('%H:%M:%S')}")
             my_function()
-            break
-
 
 @app.route("/")
 def home():
-    return "Use /start to begin, /stop to end"
+    return "✅ Render alive. Trading runs Mon–Fri, 9AM–4PM every 15m."
 
-@app.route("/start")
-def start():
-    global running, thread
-    if 1:
-        running = True
-        thread = threading.Thread(target=wait_for_next_15min_mark)
-        thread.start()
-        return "Trading loop started"
-    return "Already running"
-
-# @app.route("/stop")
-# def stop():
-#     global running
-#     running = False
-#     return "Trading loop stopped"
+def start_background():
+    thread = threading.Thread(target=wait_for_next_15min_mark, daemon=True)
+    thread.start()
 
 if __name__ == "__main__":
+    start_background()  # 👈 automatically starts when app boots
     app.run(host="0.0.0.0", port=5000)
