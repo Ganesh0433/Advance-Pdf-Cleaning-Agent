@@ -247,18 +247,18 @@ def home():
 @app.route("/start")
 def start():
     global running, thread
-    if not running:
+    if 1:
         running = True
         thread = threading.Thread(target=wait_for_next_15min_mark)
         thread.start()
         return "Trading loop started"
     return "Already running"
 
-@app.route("/stop")
-def stop():
-    global running
-    running = False
-    return "Trading loop stopped"
+# @app.route("/stop")
+# def stop():
+#     global running
+#     running = False
+#     return "Trading loop stopped"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
