@@ -185,6 +185,7 @@ def my_function():
 
   # Difference in seconds
   diff_seconds = (now - last_trade_datetime).total_seconds()
+  diff_seconds = 0
   print("Difference in seconds:", diff_seconds)
 
     # Check if the difference is less than 2 minutes
