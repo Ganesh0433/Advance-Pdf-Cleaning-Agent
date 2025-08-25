@@ -102,7 +102,7 @@ def my_function():
       all_sell = (
         hdfc_close_list[i] < hdfc_open_list[i]
       )
-      if (hdfc_volume_list[i])>650000 and hdfc_volume_list[i]<1700000:
+      if (hdfc_volume_list[i])>150000 and hdfc_volume_list[i]<1700000:
         flag=True
 
       if all_buy and flag and position_type != 'buy':
