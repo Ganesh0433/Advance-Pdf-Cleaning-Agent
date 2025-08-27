@@ -347,13 +347,8 @@ def test_trading():
 def run_trading():
     logger.info("Scheduled trigger for my_function")
     print("Scheduled trigger for my_function")
-    if is_trading_time():
-        my_function()
-        return "Trading logic executed"
-    else:
-        logger.info("Outside trading hours, skipping my_function")
-        print("Outside trading hours, skipping my_function")
-        return "Outside trading hours"
+    my_function()
+
 
 @app.route("/debug-thread")
 def debug_thread():
