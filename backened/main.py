@@ -2,14 +2,12 @@ from flask import Flask
 import logging
 import sys
 import os
-import threading
-import time
-from datetime import datetime, timedelta
-from tvDatafeed import TvDatafeed, Interval
+from datetime import datetime
 import pytz
 import pandas as pd
 import numpy as np
 import requests
+from tvDatafeed import TvDatafeed, Interval
 
 app = Flask(__name__)
 ist = pytz.timezone('Asia/Kolkata')
@@ -23,10 +21,6 @@ logging.basicConfig(
     force=True
 )
 logger = logging.getLogger(__name__)
-
-# Global variable to track thread status
-background_thread = None
-thread_running = False
 
 logger.info("Application starting at %s", datetime.now(ist))
 print("Application starting at", datetime.now(ist))
@@ -68,7 +62,7 @@ def my_function():
     print("Starting my_function")
     try:
         # Fetch data
-        length = 10  # Reduced for testing
+        length = 5  # Reduced to minimize memory usage
         hdfc = fetch_data_with_retry('HDFCBANK', 'NSE', Interval.in_15_minute, length)
         if hdfc is None:
             logger.error("Aborting my_function: No HDFC data")
@@ -109,10 +103,10 @@ def my_function():
         hdfc_high_list = hdfc['high'][g:d].tolist()
         hdfc_low_list = hdfc['low'][g:d].tolist()
         banknifty_close_list = banknifty['close'][g:d].tolist()
-        banknifty_open_list = hdfc['open'][g:d].tolist()
-        banknifty_high_list = hdfc['high'][g:d].tolist()
-        banknifty_low_list = hdfc['low'][g:d].tolist()
-        banknifty_volume_list = hdfc['volume'][g:d].tolist()
+        banknifty_open_list = banknifty['open'][g:d].tolist()
+        banknifty_high_list = banknifty['high'][g:d].tolist()
+        banknifty_low_list = banknifty['low'][g:d].tolist()
+        banknifty_volume_list = banknifty['volume'][g:d].tolist()
         banknifty_datetime = banknifty.index[g:d].tolist()
         entry_price = None
         position_type = None
@@ -291,10 +285,9 @@ def my_function():
             logger.info(f"Difference in seconds: {diff_seconds}")
             print(f"Difference in seconds: {diff_seconds}")
 
-            if diff_seconds < 120:  # 2 minutes
+            if 1 or diff_seconds < 120:  # 2 minutes
                 lasttrade_list = last_trade.keys()
                 if 'Entry_Price' in lasttrade_list:
-                    # Position_send_to_firebase(last_trade)  # Disabled until implemented
                     bot_token = '7747497929:AAHPFWQ3G-59BtozjVPN4Qqpu4qux4TP-WE'
                     chat_id = '1608202016'
                     message = f"New Entry: {last_trade['symbol']} {last_trade['Position_Type']} at {last_trade['Entry_Price']} on {last_trade['Date']} {last_trade['Time']}"
@@ -331,45 +324,11 @@ def my_function():
         logger.error(f"Error in my_function: {e}", exc_info=True)
         print(f"Error in my_function: {e}")
 
-def wait_for_next_2min_mark():
-    global thread_running
-    thread_running = True
-    logger.info("Starting background thread")
-    print("Starting background thread")
-    try:
-        while thread_running:
-            logger.info("Background thread loop running")
-            print("Background thread loop running")
-            if not is_trading_time():
-                logger.info("Outside trading hours, sleeping 60s")
-                print("Outside trading hours, sleeping 60s")
-                time.sleep(60)
-                continue
-            now = datetime.now(ist)
-            logger.info(f"Current time: {now}")
-            print(f"Current time: {now}")
-            minutes_to_add = (2 - (now.minute % 2)) % 2
-            if minutes_to_add == 0:
-                minutes_to_add = 2
-            next_mark = now.replace(second=0, microsecond=0) + timedelta(minutes=minutes_to_add)
-            sleep_time = (next_mark - now).total_seconds()
-            logger.info(f"Sleeping {sleep_time}s until {next_mark}")
-            print(f"Sleeping {sleep_time}s until {next_mark}")
-            time.sleep(sleep_time)
-            if is_trading_time():
-                logger.info("Running my_function in background thread")
-                print("Running my_function in background thread")
-                my_function()
-    except Exception as e:
-        thread_running = False
-        logger.error(f"Background thread crashed: {e}", exc_info=True)
-        print(f"Background thread crashed: {e}")
-
 @app.route("/")
 def home():
     logger.info("Home endpoint accessed")
     print("Home endpoint accessed")
-    return "✅ Render alive. Trading runs Mon–Fri, 9AM–4PM every 2m."
+    return "✅ Render alive. Trading runs Mon–Fri, 9AM–4PM via /run-trading."
 
 @app.route("/health")
 def health():
@@ -384,29 +343,28 @@ def test_trading():
     my_function()
     return "Trading logic triggered"
 
+@app.route("/run-trading")
+def run_trading():
+    logger.info("Scheduled trigger for my_function")
+    print("Scheduled trigger for my_function")
+    if is_trading_time():
+        my_function()
+        return "Trading logic executed"
+    else:
+        logger.info("Outside trading hours, skipping my_function")
+        print("Outside trading hours, skipping my_function")
+        return "Outside trading hours"
+
 @app.route("/debug-thread")
 def debug_thread():
-    global thread_running, background_thread
-    logger.info(f"Debug thread: Running={thread_running}, Thread alive={background_thread.is_alive() if background_thread else False}")
-    print(f"Debug thread: Running={thread_running}, Thread alive={background_thread.is_alive() if background_thread else False}")
-    return f"Thread running: {thread_running}, Thread alive: {background_thread.is_alive() if background_thread else False}"
-
-def start_background():
-    global background_thread, thread_running
-    logger.info("Starting background thread for trading")
-    print("Starting background thread for trading")
-    try:
-        background_thread = threading.Thread(target=wait_for_next_2min_mark, daemon=True)
-        background_thread.start()
-        logger.info("Background thread started successfully")
-        print("Background thread started successfully")
-    except Exception as e:
-        logger.error(f"Failed to start background thread: {e}", exc_info=True)
-        print(f"Failed to start background thread: {e}")
+    # No thread exists, but keep for compatibility
+    status = {"thread_running": False, "thread_alive": False, "message": "Using scheduled /run-trading endpoint"}
+    logger.info(f"Debug status: {status}")
+    print(f"Debug status: {status}")
+    return status
 
 if __name__ == "__main__":
     logger.info("Starting Flask app")
     print("Starting Flask app")
-    start_background()
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
