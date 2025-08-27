@@ -189,7 +189,7 @@ def my_function():
   print("Difference in seconds:", diff_seconds)
 
     # Check if the difference is less than 2 minutes
-  if  diff_seconds < 200:
+  if  1 or diff_seconds < 200:
         lasttrade_list = last_trade.keys()
         if 'Entry_Price' in lasttrade_list:
 
@@ -217,7 +217,8 @@ def my_function():
 
 
 def is_trading_time():
-    now = datetime.now()
+    now = datetime.now(ist)
+  
     # Monday=0 … Sunday=6
     if now.weekday() >= 5:  # Sat or Sun
         return False
@@ -232,9 +233,9 @@ def wait_for_next_15min_mark():
             continue
 
         now = datetime.now()
-        minutes_to_add = (15 - (now.minute % 15)) % 15
+        minutes_to_add = (2 - (now.minute % 2)) % 2
         if minutes_to_add == 0:
-            minutes_to_add = 15
+            minutes_to_add = 2
 
         next_mark = now.replace(second=0, microsecond=0) + timedelta(minutes=minutes_to_add)
         next_mark += timedelta(seconds=3)  # small buffer
@@ -250,6 +251,7 @@ def wait_for_next_15min_mark():
 
 @app.route("/")
 def home():
+   
     return "✅ Render alive. Trading runs Mon–Fri, 9AM–4PM every 15m."
 
 def start_background():
