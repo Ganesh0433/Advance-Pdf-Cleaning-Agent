@@ -348,6 +348,7 @@ def run_trading():
     logger.info("Scheduled trigger for my_function")
     print("Scheduled trigger for my_function")
     my_function()
+    return "running"
 
 
 @app.route("/debug-thread")
