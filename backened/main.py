@@ -217,14 +217,13 @@ def my_function():
 
 
 def is_trading_time():
-    now = datetime.now(ist)
-  
+    now = datetime.now(ist)  # 👈 use IST
     # Monday=0 … Sunday=6
     if now.weekday() >= 5:  # Sat or Sun
         return False
-    return 9 <= now.hour < 16  # 9:00–15:59
+    return 9 <= now.hour < 16  # 9:00–15:59 IST
 
-def wait_for_next_15min_mark():
+def wait_for_next_2min_mark():  # 👈 updated name
     print("📌 Trading thread started")
     while True:
         if not is_trading_time():
@@ -232,7 +231,7 @@ def wait_for_next_15min_mark():
             time.sleep(60)
             continue
 
-        now = datetime.now()
+        now = datetime.now(ist)  # 👈 use IST here too
         minutes_to_add = (2 - (now.minute % 2)) % 2
         if minutes_to_add == 0:
             minutes_to_add = 2
@@ -240,24 +239,23 @@ def wait_for_next_15min_mark():
         next_mark = now.replace(second=0, microsecond=0) + timedelta(minutes=minutes_to_add)
         next_mark += timedelta(seconds=3)  # small buffer
 
-        sleep_time = (next_mark - datetime.now()).total_seconds()
+        sleep_time = (next_mark - datetime.now(IST)).total_seconds()  # 👈 also IST
         if sleep_time > 0:
             print(f"⏳ Sleeping {int(sleep_time)}s until {next_mark.strftime('%H:%M:%S')}")
             time.sleep(sleep_time)
 
         if is_trading_time():
-            print(f"🚀 Running my_function() at {datetime.now().strftime('%H:%M:%S')}")
+            print(f"🚀 Running my_function() at {datetime.now(ist).strftime('%H:%M:%S')}")
             my_function()
 
 @app.route("/")
 def home():
-   
-    return "✅ Render alive. Trading runs Mon–Fri, 9AM–4PM every 15m."
+    return "✅ Render alive. Trading runs Mon–Fri, 9AM–4PM every 2m."  # 👈 updated message
 
 def start_background():
-    thread = threading.Thread(target=wait_for_next_15min_mark, daemon=True)
+    thread = threading.Thread(target=wait_for_next_2min_mark, daemon=True)
     thread.start()
 
 if __name__ == "__main__":
-    start_background()  # 👈 automatically starts when app boots
+    start_background()
     app.run(host="0.0.0.0", port=5000)
