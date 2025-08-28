@@ -169,7 +169,7 @@ def my_function():
 
             all_buy = hdfc_close_list[i] > hdfc_open_list[i]
             all_sell = hdfc_close_list[i] < hdfc_open_list[i]
-            if 150000 < hdfc_volume_list[i] < 1700000:
+            if 1400000 < hdfc_volume_list[i] < 1800000:
                 flag = True
 
             if all_buy and flag and position_type != 'buy':
@@ -285,7 +285,7 @@ def my_function():
             logger.info(f"Difference in seconds: {diff_seconds}")
             print(f"Difference in seconds: {diff_seconds}")
 
-            if 1 or diff_seconds < 120:  # 2 minutes
+            if diff_seconds < 200:  # 2 minutes
                 lasttrade_list = last_trade.keys()
                 if 'Entry_Price' in lasttrade_list:
                     bot_token = '7747497929:AAHPFWQ3G-59BtozjVPN4Qqpu4qux4TP-WE'
