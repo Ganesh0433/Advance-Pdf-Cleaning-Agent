@@ -345,7 +345,7 @@ def test_trading():
     my_function()
     return "Trading logic triggered"
 
-@app.route("/run-trading")
+@app.route("/run_trading")
 def run-trading():
     now = datetime.now()
     # Quarter-hour marks
