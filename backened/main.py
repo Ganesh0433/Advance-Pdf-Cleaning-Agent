@@ -285,7 +285,9 @@ def my_function():
             logger.info(f"Difference in seconds: {diff_seconds}")
             print(f"Difference in seconds: {diff_seconds}")
 
-            if diff_seconds < 200:  # 2 minutes
+            # if diff_seconds < 2:  # 2 minutes
+            if 1:
+                # 2 minutes
                 lasttrade_list = last_trade.keys()
                 if 'Entry_Price' in lasttrade_list:
                     bot_token = '7747497929:AAHPFWQ3G-59BtozjVPN4Qqpu4qux4TP-WE'
@@ -344,11 +346,20 @@ def test_trading():
     return "Trading logic triggered"
 
 @app.route("/run-trading")
-def run_trading():
-    logger.info("Scheduled trigger for my_function")
-    print("Scheduled trigger for my_function")
-    my_function()
-    return "running"
+def run-trading():
+    now = datetime.now()
+    # Quarter-hour marks
+    quarter_hours = [0, 15, 30, 45]
+
+    # Check if current minute is within 0–3 minutes after any quarter hour
+    if any(0 <= (now.minute - q) <= 3 for q in quarter_hours):
+        logger.info(f"Manual trigger for my_function at {now}")
+        print(f"Manual trigger for my_function at {now}")
+        my_function()
+        return "triggered"
+    else:
+        print(f"Skipped at {now.minute} minute")
+        return "not triggered"
 
 
 @app.route("/debug-thread")
