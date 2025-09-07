@@ -68,7 +68,7 @@ def my_function():
             logger.error("Aborting my_function: No HDFC data")
             print("Aborting my_function: No HDFC data")
             return
-        banknifty = fetch_data_with_retry('BANKNIFTY', 'NSE', Interval.in_15_minute, length)
+        banknifty = fetch_data_with_retry('NIFTY', 'NSE', Interval.in_15_minute, length)
         if banknifty is None:
             logger.error("Aborting my_function: No BankNIFTY data")
             print("Aborting my_function: No BankNIFTY data")
@@ -97,11 +97,22 @@ def my_function():
         g = 0
         d = -1
         reversefalse = False
-        hdfc_close_list = hdfc['close'][g:d].tolist()
+        #hdfc_close_list = hdfc['close'][g:d].tolist()
         hdfc_open_list = hdfc['open'][g:d].tolist()
-        hdfc_volume_list = hdfc['volume'][g:d].tolist()
+        #hdfc_volume_list = hdfc['volume'][g:d].tolist()
+        #hdfc_high_list = hdfc['high'][g:d].tolist()
+        #hdfc_low_list = hdfc['low'][g:d].tolist()
+
         hdfc_high_list = hdfc['high'][g:d].tolist()
         hdfc_low_list = hdfc['low'][g:d].tolist()
+        hdfc_close_list = banknifty['close'][g:d].tolist()
+        
+        hhdfc_close_list = hdfc['close'][g:d].tolist()
+        hhdfc_open_list = hdfc['open'][g:d].tolist()
+        hhdfc_volume_list = hdfc['volume'][g:d].tolist()
+
+
+        
         banknifty_close_list = banknifty['close'][g:d].tolist()
         banknifty_open_list = banknifty['open'][g:d].tolist()
         banknifty_high_list = banknifty['high'][g:d].tolist()
@@ -167,10 +178,22 @@ def my_function():
                     current_profit = 0
                 continue
 
-            all_buy = hdfc_close_list[i] > hdfc_open_list[i]
-            all_sell = hdfc_close_list[i] < hdfc_open_list[i]
-            if 1400000 < hdfc_volume_list[i] < 1800000:
-                flag = True
+            # all_buy = hdfc_close_list[i] > hdfc_open_list[i]
+            # all_sell = hdfc_close_list[i] < hdfc_open_list[i]
+            # if 1400000 < hdfc_volume_list[i] < 1800000:
+            #     flag = True
+
+            all_buy = (
+                
+                 hhdfc_close_list[i] > hhdfc_open_list[i]
+            )
+            all_sell = (
+               hhdfc_close_list[i] < hhdfc_open_list[i]
+            )
+
+
+            if (hhdfc_volume_list[i])>1400000 and hhdfc_volume_list[i]<3400000:
+              flag=True
 
             if all_buy and flag and position_type != 'buy':
                 if position_type == 'sell':
