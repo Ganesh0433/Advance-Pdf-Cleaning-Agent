@@ -62,7 +62,7 @@ def my_function():
     print("Starting my_function")
     try:
         # Fetch data
-        length = 5  # Reduced to minimize memory usage
+        length = 100  # Reduced to minimize memory usage
         hdfc = fetch_data_with_retry('HDFCBANK', 'NSE', Interval.in_15_minute, length)
         if hdfc is None:
             logger.error("Aborting my_function: No HDFC data")
@@ -76,10 +76,10 @@ def my_function():
 
         # Localize and convert time zones
         banknifty = banknifty.tz_localize('UTC').tz_convert('Asia/Kolkata')
-        logger.info(f"HDFC Data: {hdfc.head()}")
-        print(f"HDFC Data: {hdfc.head()}")
-        logger.info(f"BankNIFTY Data: {banknifty.head()}")
-        print(f"BankNIFTY Data: {banknifty.head()}")
+        # logger.info(f"HDFC Data: {hdfc.head()}")
+        # print(f"HDFC Data: {hdfc.head()}")
+        # logger.info(f"BankNIFTY Data: {banknifty.head()}")
+        # print(f"BankNIFTY Data: {banknifty.head()}")
 
         # Trading logic
         countlimit = length
@@ -312,6 +312,7 @@ def my_function():
             if 1:
                 # 2 minutes
                 lasttrade_list = last_trade.keys()
+                last_trade['symbol']='NIFTY'
                 if 'Entry_Price' in lasttrade_list:
                     bot_token = '7747497929:AAHPFWQ3G-59BtozjVPN4Qqpu4qux4TP-WE'
                     chat_id = '1608202016'
