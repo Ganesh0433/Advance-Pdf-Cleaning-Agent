@@ -308,8 +308,8 @@ def my_function():
             logger.info(f"Difference in seconds: {diff_seconds}")
             print(f"Difference in seconds: {diff_seconds}")
 
-            # if diff_seconds < 2:  # 2 minutes
-            if 1:
+            if diff_seconds < 2:  # 2 minutes
+            # if 1:
                 # 2 minutes
                 lasttrade_list = last_trade.keys()
                 last_trade['symbol']='NIFTY'
