@@ -139,8 +139,8 @@ def my_function():
             current_time = banknifty_datetime[i]
             current_date_str = current_time.strftime("%Y-%m-%d")
             current_time_str = current_time.strftime("%H:%M")
-            logger.info(f"Processing candle {i}: {current_date_str} {current_time_str}")
-            print(f"Processing candle {i}: {current_date_str} {current_time_str}")
+            # logger.info(f"Processing candle {i}: {current_date_str} {current_time_str}")
+            # print(f"Processing candle {i}: {current_date_str} {current_time_str}")
 
             day_of_week = datetime.strptime(current_date_str, "%Y-%m-%d").strftime("%A")
             hour = current_time_str.split(":")[0]
@@ -308,7 +308,7 @@ def my_function():
             logger.info(f"Difference in seconds: {diff_seconds}")
             print(f"Difference in seconds: {diff_seconds}")
 
-            if diff_seconds < 2:  # 2 minutes
+            if diff_seconds < 200:  # 2 minutes
             # if 1:
                 # 2 minutes
                 lasttrade_list = last_trade.keys()
