@@ -192,7 +192,7 @@ def my_function():
             )
 
 
-            if (hhdfc_volume_list[i])>1400000 and hhdfc_volume_list[i]<3400000:
+            if (hhdfc_volume_list[i])>1000000 and hhdfc_volume_list[i]<3400000:
               flag=True
 
             if all_buy and flag and position_type != 'buy':
