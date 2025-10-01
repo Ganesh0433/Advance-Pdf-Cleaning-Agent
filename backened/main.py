@@ -3,6 +3,7 @@ import logging
 import sys
 import os
 from datetime import datetime
+from datetime import timedelta
 import pytz
 import pandas as pd
 import numpy as np
@@ -316,7 +317,7 @@ def my_function():
                 if 'Entry_Price' in lasttrade_list:
                     bot_token = '7747497929:AAHPFWQ3G-59BtozjVPN4Qqpu4qux4TP-WE'
                     chat_id = '1608202016'
-                    message = f"New Entry: {last_trade['symbol']} {last_trade['Position_Type']} at {last_trade['Entry_Price']} on {last_trade['Date']} {last_trade['Time']}"
+                    message = f"New Entry: {last_trade['symbol']} {last_trade['Position_Type']} at {last_trade['Entry_Price']} on {last_trade['Date']} {last_trade['Time'] + timedelta(minutes=15)}"
                     url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
                     params = {'chat_id': chat_id, 'text': message}
                     try:
@@ -329,7 +330,7 @@ def my_function():
                 if 'Exit_Price' in lasttrade_list:
                     bot_token = '7747497929:AAHPFWQ3G-59BtozjVPN4Qqpu4qux4TP-WE'
                     chat_id = '1608202016'
-                    message = f"New Exit: {last_trade['symbol']} {last_trade['Position_Type']} at {last_trade['Exit_Price']} on {last_trade['Date']} {last_trade['Time']}"
+                    message = f"New Exit: {last_trade['symbol']} {last_trade['Position_Type']} at {last_trade['Exit_Price']} on {last_trade['Date']} {last_trade['Time'] + timedelta(minutes=15)}"
                     url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
                     params = {'chat_id': chat_id, 'text': message}
                     try:
